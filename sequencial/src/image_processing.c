@@ -17,8 +17,12 @@ int process_jpeg_file(char *src_path, char *dst_path, int blur_radius) {
 }
 
 int blur_jpegs_from_directory(char *src_dir, char *dst_dir, int blur_radius) {
-  file_list_t jpeg_file_list = list_jpeg_files(src_dir);
-  if (jpeg_file_list.count == 0) {
+  if (!src_dir || !dst_dir || blur_radius < 1) {
+    return 1;
+  }
+
+  file_list_t files = list_jpeg_files(src_dir);
+  if (files.count == 0) {
     return 1;
   }
 
@@ -26,14 +30,14 @@ int blur_jpegs_from_directory(char *src_dir, char *dst_dir, int blur_radius) {
     return 1;
   }
 
-  for (int i = 0; i < jpeg_file_list.count; i++) {
+  for (int i = 0; i < files.count; i++) {
     char dst_path[PATH_MAX];
     snprintf(dst_path, sizeof(dst_path), "%s/%s", dst_dir,
-             jpeg_file_list.entries[i].filename);
+             files.entries[i].filename);
 
-    process_jpeg_file(jpeg_file_list.entries[i].path, dst_path, blur_radius);
+    process_jpeg_file(files.entries[i].path, dst_path, blur_radius);
   }
 
-  free_file_list(&jpeg_file_list);
+  free_file_list(&files);
   return 0;
 }
